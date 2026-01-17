@@ -1,11 +1,9 @@
-import { LLM_SERVICES, buildSummaryPrompt } from '../common/config.js';
+import { LLM_SERVICES, summaryPrompt } from '../common/config.js';
 
-const DEFAULT_LLM = 'perplexity';
+const DEFAULT_LLM_ID = 'perplexity';
 
-// Set the action title with keyboard shortcut
 browser.action.setTitle({ title: 'TL;DR (Shift+DD)' });
 
-// Icon paths
 const ICON_DEFAULT = {
   16: 'icons/icon16.png',
   48: 'icons/icon48.png',
@@ -18,46 +16,36 @@ const ICON_ACTIVE = {
   128: 'icons/icon128-active.png'
 };
 
-// Pulse the icon briefly
-async function pulseIcon() {
+const pulseIcon = async () => {
   await browser.action.setIcon({ path: ICON_ACTIVE });
-  setTimeout(() => {
-    browser.action.setIcon({ path: ICON_DEFAULT });
-  }, 300);
-}
+  setTimeout(() => browser.action.setIcon({ path: ICON_DEFAULT }), 300);
+};
 
-// Get the default LLM from storage
-async function getDefaultLLM() {
+const storedLLM = async () => {
   const result = await browser.storage.sync.get(['defaultLLM']);
-  return result.defaultLLM || DEFAULT_LLM;
-}
 
-// Open LLM with the given URL
-async function openLLM(llmId, pageUrl) {
+  return result.defaultLLM || DEFAULT_LLM_ID;
+};
+
+const openLLM = async (llmId, pageUrl) => {
   const service = LLM_SERVICES[llmId];
-  if (service && pageUrl) {
-    pulseIcon();
-    const prompt = buildSummaryPrompt(pageUrl);
-    const llmUrl = service.buildUrl(prompt);
-    browser.tabs.create({ url: llmUrl });
-  }
-}
+  if (!service || !pageUrl) return;
 
-// Handle extension icon click - use default LLM
+  pulseIcon();
+  const prompt = summaryPrompt(pageUrl);
+  const llmUrl = service.buildUrl(prompt);
+  browser.tabs.create({ url: llmUrl });
+};
+
 browser.action.onClicked.addListener(async (tab) => {
-  if (tab?.url) {
-    const defaultLLM = await getDefaultLLM();
-    await openLLM(defaultLLM, tab.url);
-  }
+  if (!tab?.url) return;
+
+  const llmId = await storedLLM();
+  await openLLM(llmId, tab.url);
 });
 
-// Handle keyboard shortcuts from manifest commands
 browser.commands.onCommand.addListener(async (command) => {
-  const tabs = await browser.tabs.query({
-    active: true,
-    currentWindow: true
-  });
-
+  const tabs = await browser.tabs.query({ active: true, currentWindow: true });
   if (!tabs[0]?.url) return;
 
   if (command.startsWith('summarize-')) {
@@ -66,18 +54,14 @@ browser.commands.onCommand.addListener(async (command) => {
   }
 });
 
-// Handle messages from content script (vim-style shortcuts)
 browser.runtime.onMessage.addListener(async (message, sender) => {
+  const tab = sender.tab;
+  if (!tab?.url) return;
+
   if (message.action === 'summarize') {
-    const tab = sender.tab;
-    if (tab?.url) {
-      const defaultLLM = await getDefaultLLM();
-      await openLLM(defaultLLM, tab.url);
-    }
+    const llmId = await storedLLM();
+    await openLLM(llmId, tab.url);
   } else if (message.action === 'summarize-llm' && message.llm) {
-    const tab = sender.tab;
-    if (tab?.url) {
-      await openLLM(message.llm, tab.url);
-    }
+    await openLLM(message.llm, tab.url);
   }
 });

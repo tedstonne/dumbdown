@@ -1,17 +1,13 @@
-const DEFAULT_LLM = 'perplexity';
+const DEFAULT_LLM_ID = 'perplexity';
 
-// Load saved settings
 document.addEventListener('DOMContentLoaded', async () => {
   const result = await browser.storage.sync.get(['defaultLLM']);
-  const defaultLLM = result.defaultLLM || DEFAULT_LLM;
+  const llmId = result.defaultLLM || DEFAULT_LLM_ID;
 
-  const radio = document.querySelector(`input[value="${defaultLLM}"]`);
-  if (radio) {
-    radio.checked = true;
-  }
+  const radio = document.querySelector(`input[value="${llmId}"]`);
+  if (radio) radio.checked = true;
 });
 
-// Save on change
 document.querySelectorAll('input[name="defaultLLM"]').forEach((radio) => {
   radio.addEventListener('change', async (e) => {
     await browser.storage.sync.set({ defaultLLM: e.target.value });
@@ -20,8 +16,6 @@ document.querySelectorAll('input[name="defaultLLM"]').forEach((radio) => {
     status.textContent = 'Settings saved!';
     status.classList.add('show');
 
-    setTimeout(() => {
-      status.classList.remove('show');
-    }, 2000);
+    setTimeout(() => status.classList.remove('show'), 2000);
   });
 });

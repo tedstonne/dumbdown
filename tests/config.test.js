@@ -1,15 +1,15 @@
 import { test, describe } from 'node:test';
 import assert from 'node:assert';
-import { LLM_SERVICES, buildSummaryPrompt } from '../src/common/config.js';
+import { LLM_SERVICES, summaryPrompt } from '../src/common/config.js';
 
-describe('buildSummaryPrompt', () => {
+describe('summaryPrompt', () => {
   test('creates prompt with URL', () => {
-    assert.strictEqual(buildSummaryPrompt('https://example.com'), 'summarize https://example.com');
+    assert.strictEqual(summaryPrompt('https://example.com'), 'summarize https://example.com');
   });
 
   test('handles URLs with special characters', () => {
     assert.strictEqual(
-      buildSummaryPrompt('https://example.com/path?q=test&foo=bar'),
+      summaryPrompt('https://example.com/path?q=test&foo=bar'),
       'summarize https://example.com/path?q=test&foo=bar'
     );
   });

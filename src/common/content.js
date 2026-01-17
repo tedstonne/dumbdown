@@ -1,19 +1,17 @@
-// Vim-style shortcut: Shift+DD (hold shift, tap d twice)
+import { shortcutDetector, shiftOnly, inputField } from './shortcut.js';
 
-import { createShortcutDetector, isShiftOnly, isInputField } from './shortcut.js';
-
-const detector = createShortcutDetector('dd', 500);
+const detector = shortcutDetector('dd', 500);
 
 document.addEventListener('keydown', (e) => {
-  // Ignore if typing in an input field
-  if (isInputField(e.target)) {
+  if (inputField(e.target)) {
     detector.reset();
+
     return;
   }
 
-  // Must hold Shift only
-  if (!isShiftOnly(e)) {
+  if (!shiftOnly(e)) {
     detector.reset();
+
     return;
   }
 

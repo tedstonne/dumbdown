@@ -29,6 +29,4 @@ export const LLM_SERVICES = {
   }
 };
 
-export function buildSummaryPrompt(url) {
-  return `summarize ${url}`;
-}
+export const summaryPrompt = (url) => `summarize ${url}`;
