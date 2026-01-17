@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Dumbdown",
   "version": "1.0.0",
-  "description": "TL;DR as a shortcut",
+  "description": "AI TL;DR as a shortcut",
 
   "browser_specific_settings": {
     "gecko": {

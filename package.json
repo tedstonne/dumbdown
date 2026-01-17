@@ -2,7 +2,7 @@
   "name": "dumbdown",
   "version": "1.0.0",
   "type": "module",
-  "description": "Browser extension to summarize pages with LLMs",
+  "description": "AI TL;DR as a shortcut",
   "scripts": {
     "build": "node scripts/build.js",
     "build:chrome": "node scripts/build.js chrome",

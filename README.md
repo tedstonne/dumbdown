@@ -1,6 +1,8 @@
-# Dumbdown
+![Dumbdown](assets/dumbdown.png)
 
-A browser extension that summarizes web pages using LLMs.
+A browser extension that summarizes any webpage with your favorite LLM. Hold Shift and type DD, or click the toolbar icon, and Dumbdown opens your selected LLM with the page ready to summarize. No API keys needed—it uses the LLM's web interface directly.
+
+**Supported LLMs:** Perplexity, ChatGPT, Claude
 
 ## Build
 
