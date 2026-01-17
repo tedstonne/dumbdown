@@ -1,8 +1,11 @@
 #!/usr/bin/env node
 
-const fs = require('fs');
-const path = require('path');
-const esbuild = require('esbuild');
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import esbuild from 'esbuild';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const browsers = process.argv[2]
   ? [process.argv[2]]
@@ -75,6 +78,19 @@ async function buildBrowser(browser) {
     platform: 'browser',
     target: ['chrome109', 'firefox109'],
   });
+
+  // Bundle content.js (vim-style shortcuts)
+  const contentSrc = path.join(srcDir, 'common', 'content.js');
+  if (fs.existsSync(contentSrc)) {
+    await esbuild.build({
+      entryPoints: [contentSrc],
+      bundle: true,
+      outfile: path.join(browserBuildDir, 'content.js'),
+      format: 'iife',
+      platform: 'browser',
+      target: ['chrome109', 'firefox109'],
+    });
+  }
 
   console.log(`Built ${browser} extension in ${browserBuildDir}`);
 }

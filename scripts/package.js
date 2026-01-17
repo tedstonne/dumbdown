@@ -1,8 +1,11 @@
 #!/usr/bin/env node
 
-const fs = require('fs');
-const path = require('path');
-const archiver = require('archiver');
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import archiver from 'archiver';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const browsers = process.argv[2]
   ? [process.argv[2]]

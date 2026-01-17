@@ -41,32 +41,44 @@
     "open_in_tab": false
   },
 
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+
   "commands": {
     "_execute_action": {
       "suggested_key": {
         "default": "Alt+Shift+S",
-        "mac": "Command+Alt+S"
+        "linux": "Ctrl+Shift+Y",
+        "mac": "Command+Shift+S"
       },
       "description": "Summarize with default LLM"
     },
     "summarize-perplexity": {
       "suggested_key": {
         "default": "Alt+Shift+P",
-        "mac": "Command+Alt+P"
+        "linux": "Ctrl+Shift+O",
+        "mac": "Command+Shift+P"
       },
       "description": "Summarize with Perplexity"
     },
     "summarize-chatgpt": {
       "suggested_key": {
         "default": "Alt+Shift+G",
-        "mac": "Command+Alt+G"
+        "linux": "Ctrl+Shift+U",
+        "mac": "Command+Shift+G"
       },
       "description": "Summarize with ChatGPT"
     },
     "summarize-claude": {
       "suggested_key": {
         "default": "Alt+Shift+C",
-        "mac": "Command+Alt+C"
+        "linux": "Ctrl+Shift+L",
+        "mac": "Command+Shift+C"
       },
       "description": "Summarize with Claude"
     }

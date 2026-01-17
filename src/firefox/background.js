@@ -2,14 +2,8 @@ import { LLM_SERVICES, buildSummaryPrompt } from '../common/config.js';
 
 const DEFAULT_LLM = 'perplexity';
 
-// Set the action title with keyboard shortcut on startup
-async function updateActionTitle() {
-  const isMac = navigator.platform.toUpperCase().includes('MAC');
-  const shortcut = isMac ? '⌘⌥S' : 'Alt+Shift+S';
-  browser.action.setTitle({ title: `TL;DR as a shortcut (${shortcut})` });
-}
-
-updateActionTitle();
+// Set the action title with keyboard shortcut
+browser.action.setTitle({ title: 'TL;DR (Shift+DD)' });
 
 // Icon paths
 const ICON_DEFAULT = {
@@ -57,7 +51,7 @@ browser.action.onClicked.addListener(async (tab) => {
   }
 });
 
-// Handle keyboard shortcuts
+// Handle keyboard shortcuts from manifest commands
 browser.commands.onCommand.addListener(async (command) => {
   const tabs = await browser.tabs.query({
     active: true,
@@ -69,5 +63,21 @@ browser.commands.onCommand.addListener(async (command) => {
   if (command.startsWith('summarize-')) {
     const llmId = command.replace('summarize-', '');
     await openLLM(llmId, tabs[0].url);
+  }
+});
+
+// Handle messages from content script (vim-style shortcuts)
+browser.runtime.onMessage.addListener(async (message, sender) => {
+  if (message.action === 'summarize') {
+    const tab = sender.tab;
+    if (tab?.url) {
+      const defaultLLM = await getDefaultLLM();
+      await openLLM(defaultLLM, tab.url);
+    }
+  } else if (message.action === 'summarize-llm' && message.llm) {
+    const tab = sender.tab;
+    if (tab?.url) {
+      await openLLM(message.llm, tab.url);
+    }
   }
 });

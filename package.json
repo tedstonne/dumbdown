@@ -1,6 +1,7 @@
 {
   "name": "dumbdown",
   "version": "1.0.0",
+  "type": "module",
   "description": "Browser extension to summarize pages with LLMs",
   "scripts": {
     "build": "node scripts/build.js",
@@ -9,7 +10,8 @@
     "package": "node scripts/package.js",
     "package:chrome": "node scripts/package.js chrome",
     "package:firefox": "node scripts/package.js firefox",
-    "clean": "rm -rf build/"
+    "clean": "rm -rf build/",
+    "test": "node --test 'tests/*.test.js'"
   },
   "devDependencies": {
     "archiver": "^6.0.0",
