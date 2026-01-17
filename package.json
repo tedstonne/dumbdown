@@ -15,7 +15,7 @@
   },
   "devDependencies": {
     "archiver": "^6.0.0",
-    "esbuild": "^0.19.0",
+    "esbuild": "^0.25.0",
     "sharp": "^0.34.5"
   }
 }
