@@ -1,12 +1,18 @@
 {
   "manifest_version": 3,
   "name": "Dumbdown",
-  "version": "1.0.0",
+  "version": "2.1.0",
   "description": "AI TL;DR as a shortcut",
 
   "permissions": [
     "activeTab",
     "storage"
+  ],
+
+  "host_permissions": [
+    "https://chatgpt.com/*",
+    "https://claude.ai/*",
+    "https://www.perplexity.ai/*"
   ],
 
   "action": {
@@ -38,6 +44,15 @@
     {
       "matches": ["<all_urls>"],
       "js": ["content.js"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "https://chatgpt.com/*",
+        "https://claude.ai/*",
+        "https://www.perplexity.ai/*"
+      ],
+      "js": ["inject.js"],
       "run_at": "document_idle"
     }
   ],
