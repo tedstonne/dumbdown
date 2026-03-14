@@ -34,14 +34,17 @@
 Summarize any page. Ask follow-ups. Go deeper.
 
 **Features:**
+- Extracts page content as clean markdown using Readability
+- Injects content directly into the LLM's input field and auto-submits
+- Falls back to URL-only when content extraction fails
 - One-click summarization via toolbar icon
-- Vim-style shortcut: hold Shift and type DD twice
+- Vim-style shortcut: hold Shift and type DD
 - Keyboard shortcuts for quick access
 - Choose your LLM: Perplexity, ChatGPT, or Claude
 - Visual feedback when activated
 
 **How it works:**
-Click the icon or use a shortcut, and Dumbdown opens your selected LLM with the current page URL ready to summarize. No API keys needed—it uses the LLM's web interface.
+Click the icon or use a shortcut, and Dumbdown extracts the page content as markdown, opens your selected LLM, injects the content into the input field, and auto-submits. If extraction fails, it falls back to sending just the URL. No API keys needed—it uses the LLM's web interface.
 
 **Shortcuts:**
 - Shift+DD (vim-style, works anywhere except text fields)
