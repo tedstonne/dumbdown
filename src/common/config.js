@@ -29,4 +29,14 @@ export const LLM_SERVICES = {
   }
 };
 
-export const summaryPrompt = (url) => `summarize ${url}`;
+export const LLM_BASE_URLS = {
+  perplexity: 'https://www.perplexity.ai/',
+  chatgpt: 'https://chatgpt.com/',
+  claude: 'https://claude.ai/new',
+};
+
+export const summaryPrompt = (url, content) => {
+  if (content) return `Summarize the following:\n\n${content}\n\nSource: ${url}`;
+
+  return `summarize ${url}`;
+};

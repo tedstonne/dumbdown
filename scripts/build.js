@@ -79,13 +79,26 @@ async function buildBrowser(browser) {
     target: ['chrome109', 'firefox109'],
   });
 
-  // Bundle content.js (vim-style shortcuts)
+  // Bundle content.js (vim-style shortcuts + extraction)
   const contentSrc = path.join(srcDir, 'common', 'content.js');
   if (fs.existsSync(contentSrc)) {
     await esbuild.build({
       entryPoints: [contentSrc],
       bundle: true,
       outfile: path.join(browserBuildDir, 'content.js'),
+      format: 'iife',
+      platform: 'browser',
+      target: ['chrome109', 'firefox109'],
+    });
+  }
+
+  // Bundle inject.js (LLM textarea injection)
+  const injectSrc = path.join(srcDir, 'common', 'inject.js');
+  if (fs.existsSync(injectSrc)) {
+    await esbuild.build({
+      entryPoints: [injectSrc],
+      bundle: true,
+      outfile: path.join(browserBuildDir, 'inject.js'),
       format: 'iife',
       platform: 'browser',
       target: ['chrome109', 'firefox109'],

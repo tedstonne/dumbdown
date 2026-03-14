@@ -1,10 +1,23 @@
 import { test, describe } from 'node:test';
 import assert from 'node:assert';
-import { LLM_SERVICES, summaryPrompt } from '../src/common/config.js';
+import { LLM_SERVICES, LLM_BASE_URLS, summaryPrompt } from '../src/common/config.js';
 
 describe('summaryPrompt', () => {
-  test('creates prompt with URL', () => {
+  test('creates prompt with URL only', () => {
     assert.strictEqual(summaryPrompt('https://example.com'), 'summarize https://example.com');
+  });
+
+  test('creates prompt with URL and content', () => {
+    const result = summaryPrompt('https://example.com', '# Hello\nSome content');
+    assert.strictEqual(result, 'Summarize the following:\n\n# Hello\nSome content\n\nSource: https://example.com');
+  });
+
+  test('falls back to URL-only when content is empty', () => {
+    assert.strictEqual(summaryPrompt('https://example.com', ''), 'summarize https://example.com');
+  });
+
+  test('falls back to URL-only when content is null', () => {
+    assert.strictEqual(summaryPrompt('https://example.com', null), 'summarize https://example.com');
   });
 
   test('handles URLs with special characters', () => {
@@ -12,6 +25,20 @@ describe('summaryPrompt', () => {
       summaryPrompt('https://example.com/path?q=test&foo=bar'),
       'summarize https://example.com/path?q=test&foo=bar'
     );
+  });
+});
+
+describe('LLM_BASE_URLS', () => {
+  test('has base URL for each service', () => {
+    assert.ok(LLM_BASE_URLS.perplexity);
+    assert.ok(LLM_BASE_URLS.chatgpt);
+    assert.ok(LLM_BASE_URLS.claude);
+  });
+
+  test('URLs point to correct domains', () => {
+    assert.ok(LLM_BASE_URLS.perplexity.includes('perplexity.ai'));
+    assert.ok(LLM_BASE_URLS.chatgpt.includes('chatgpt.com'));
+    assert.ok(LLM_BASE_URLS.claude.includes('claude.ai'));
   });
 });
 

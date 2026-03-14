@@ -1,4 +1,4 @@
-import { LLM_SERVICES, summaryPrompt } from '../../common/config.js';
+import { LLM_SERVICES } from '../../common/config.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
   const mac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
@@ -19,11 +19,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       const service = LLM_SERVICES[llmId];
       if (!service || !currentUrl) return;
 
-      const prompt = summaryPrompt(currentUrl);
-      const temporaryChat = document.getElementById('temporary-chat').checked;
-      const llmUrl = service.buildUrl(prompt, { temporaryChat });
-
-      chrome.tabs.create({ url: llmUrl });
+      chrome.runtime.sendMessage({ action: 'summarize-llm', llm: llmId });
       window.close();
     });
   });

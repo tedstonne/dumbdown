@@ -1,4 +1,4 @@
-import { LLM_SERVICES, summaryPrompt } from '../common/config.js';
+import { LLM_SERVICES, LLM_BASE_URLS, summaryPrompt } from '../common/config.js';
 
 const DEFAULT_LLM_ID = 'perplexity';
 
@@ -27,21 +27,36 @@ const storedLLM = async () => {
   return result.defaultLLM || DEFAULT_LLM_ID;
 };
 
-const openLLM = async (llmId, pageUrl) => {
+const extractAndOpen = async (tabId, llmId, pageUrl) => {
   const service = LLM_SERVICES[llmId];
   if (!service || !pageUrl) return;
 
   pulseIcon();
-  const prompt = summaryPrompt(pageUrl);
-  const llmUrl = service.buildUrl(prompt);
-  browser.tabs.create({ url: llmUrl });
+
+  let content = null;
+  try {
+    content = await browser.tabs.sendMessage(tabId, { action: 'extract' });
+  } catch {
+    // extraction failed, fall back to URL-only prompt
+  }
+
+  const prompt = summaryPrompt(pageUrl, content?.markdown);
+  const baseUrl = LLM_BASE_URLS[llmId];
+
+  if (baseUrl && content?.markdown) {
+    await browser.storage.local.set({ pendingPrompt: { prompt, llmId } });
+    await browser.tabs.create({ url: baseUrl });
+  } else {
+    const llmUrl = service.buildUrl(prompt);
+    await browser.tabs.create({ url: llmUrl });
+  }
 };
 
 browser.action.onClicked.addListener(async (tab) => {
   if (!tab?.url) return;
 
   const llmId = await storedLLM();
-  await openLLM(llmId, tab.url);
+  await extractAndOpen(tab.id, llmId, tab.url);
 });
 
 browser.commands.onCommand.addListener(async (command) => {
@@ -50,18 +65,17 @@ browser.commands.onCommand.addListener(async (command) => {
 
   if (command.startsWith('summarize-')) {
     const llmId = command.replace('summarize-', '');
-    await openLLM(llmId, tabs[0].url);
+    await extractAndOpen(tabs[0].id, llmId, tabs[0].url);
   }
 });
 
-browser.runtime.onMessage.addListener(async (message, sender) => {
+browser.runtime.onMessage.addListener((message, sender) => {
   const tab = sender.tab;
   if (!tab?.url) return;
 
   if (message.action === 'summarize') {
-    const llmId = await storedLLM();
-    await openLLM(llmId, tab.url);
+    storedLLM().then((llmId) => extractAndOpen(tab.id, llmId, tab.url));
   } else if (message.action === 'summarize-llm' && message.llm) {
-    await openLLM(message.llm, tab.url);
+    extractAndOpen(tab.id, message.llm, tab.url);
   }
 });
